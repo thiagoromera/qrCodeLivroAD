@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Audiodescrição — O Burrico</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 24px; max-width: 720px; margin: 0 auto; }
+    h1 { font-size: 22px; }
+    button { font-size: 22px; padding: 16px 22px; width: 100%; margin: 14px 0; }
+    audio { width: 100%; height: 54px; }
+    .hint { font-size: 14px; opacity: .8; }
+  </style>
+</head>
+<body>
+  <h1>Audiodescrição — O Burrico</h1>
+
+  <button id="playBtn">▶️ Tocar áudio</button>
+
+  <audio id="player" controls preload="metadata">
+    <source src="o-burrico.mp3" type="audio/mpeg">
+    Seu navegador não suporta áudio.
+  </audio>
+
+  <p class="hint">Se o áudio não iniciar sozinho, toque no botão “Tocar áudio”. (Celulares costumam bloquear autoplay.)</p>
+
+  <script>
+    const player = document.getElementById('player');
+    const btn = document.getElementById('playBtn');
+
+    async function tryPlay() {
+      try { await player.play(); } catch(e) {}
+    }
+
+    // tenta autoplay (pode ser bloqueado no celular)
+    window.addEventListener('load', tryPlay);
+
+    // garante play com toque
+    btn.addEventListener('click', tryPlay);
+  </script>
+</body>
+</html>
