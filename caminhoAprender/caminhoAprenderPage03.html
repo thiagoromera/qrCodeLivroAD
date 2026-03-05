@@ -3,40 +3,63 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Audiodescrição — O Burrico</title>
+  <title>Audiodescrição — Página 03</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 24px; max-width: 720px; margin: 0 auto; }
-    h1 { font-size: 22px; }
-    button { font-size: 22px; padding: 16px 22px; width: 100%; margin: 14px 0; }
+    body { font-family: Arial, sans-serif; padding: 22px; max-width: 780px; margin: 0 auto; line-height: 1.35; }
+    h1 { font-size: 22px; margin: 0 0 12px; }
+    .btn {
+      display: block; width: 100%;
+      font-size: 22px; padding: 16px 18px;
+      border: 0; border-radius: 12px;
+      background: #111; color: #fff;
+      margin: 14px 0;
+    }
     audio { width: 100%; height: 54px; }
-    .hint { font-size: 14px; opacity: .8; }
+    .hint { font-size: 14px; opacity: .8; margin-top: 10px; }
+    .status { font-size: 14px; margin-top: 8px; }
   </style>
 </head>
 <body>
-  <h1>Audiodescrição — O Burrico</h1>
+  <h1>Audiodescrição — Página 03</h1>
 
-  <button id="playBtn">▶️ Tocar áudio</button>
+  <button class="btn" id="playBtn">▶️ Tocar áudio</button>
 
   <audio id="player" controls preload="metadata">
+    <!-- Se o MP3 estiver na MESMA pasta, deixe assim -->
     <source src="o-burrico.mp3" type="audio/mpeg">
     Seu navegador não suporta áudio.
   </audio>
 
-  <p class="hint">Se o áudio não iniciar sozinho, toque no botão “Tocar áudio”. (Celulares costumam bloquear autoplay.)</p>
+  <div class="status" id="status"></div>
+  <p class="hint">
+    Observação: celulares normalmente bloqueiam autoplay. Se não tocar sozinho, toque no botão “Tocar áudio”.
+  </p>
 
   <script>
     const player = document.getElementById('player');
     const btn = document.getElementById('playBtn');
+    const status = document.getElementById('status');
 
-    async function tryPlay() {
-      try { await player.play(); } catch(e) {}
+    async function tryPlay(fromUserGesture=false) {
+      try {
+        const p = player.play();
+        if (p && typeof p.then === "function") await p;
+        status.textContent = "Reproduzindo ✅";
+      } catch (e) {
+        status.textContent = fromUserGesture
+          ? "Não foi possível iniciar. Verifique o áudio/link."
+          : "Autoplay bloqueado pelo navegador — toque em “Tocar áudio”.";
+      }
     }
 
-    // tenta autoplay (pode ser bloqueado no celular)
-    window.addEventListener('load', tryPlay);
+    // tenta autoplay ao carregar
+    window.addEventListener('load', () => tryPlay(false));
 
-    // garante play com toque
-    btn.addEventListener('click', tryPlay);
+    // garante play com clique (isso vence o bloqueio)
+    btn.addEventListener('click', () => tryPlay(true));
+
+    // bônus: tocar no próprio player também conta como gesto
+    player.addEventListener('play', () => status.textContent = "Reproduzindo ✅");
   </script>
 </body>
 </html>
