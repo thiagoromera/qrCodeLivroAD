@@ -20,7 +20,7 @@
   </style>
 </head>
 <body>
-  <h1>Audiodescrição — Página 03</h1>
+  <h1>Audiodescrição — Página 03 v3</h1>
 
   <button class="btn" id="playBtn">▶️ Tocar áudio</button>
 
@@ -37,29 +37,32 @@
 
   <script>
     const player = document.getElementById('player');
-    const btn = document.getElementById('playBtn');
-    const status = document.getElementById('status');
+const btn = document.getElementById('playBtn');
+const status = document.getElementById('status');
 
-    async function tryPlay(fromUserGesture=false) {
-      try {
-        const p = player.play();
-        if (p && typeof p.then === "function") await p;
+function iniciarAudio() {
+    player.play()
+    .then(() => {
         status.textContent = "Reproduzindo ✅";
-      } catch (e) {
-        status.textContent = fromUserGesture
-          ? "Não foi possível iniciar. Verifique o áudio/link."
-          : "Autoplay bloqueado pelo navegador — toque em “Tocar áudio”.";
-      }
-    }
+        // Remove o evento após o primeiro sucesso para não reiniciar ao clicar de novo
+        document.removeEventListener('click', iniciarAudio);
+        document.removeEventListener('touchstart', iniciarAudio);
+    })
+    .catch(e => {
+        status.textContent = "Toque na tela para ouvir.";
+    });
+}
 
-    // tenta autoplay ao carregar
-    window.addEventListener('load', () => tryPlay(false));
+// Tenta tocar assim que carregar (raramente funciona sozinho, mas não custa tentar)
+window.addEventListener('load', () => {
+    iniciarAudio();
+    
+    // Se falhar, qualquer toque na página ativa o som
+    document.addEventListener('click', iniciarAudio);
+    document.addEventListener('touchstart', iniciarAudio); // Para celulares
+});
 
-    // garante play com clique (isso vence o bloqueio)
-    btn.addEventListener('click', () => tryPlay(true));
-
-    // bônus: tocar no próprio player também conta como gesto
-    player.addEventListener('play', () => status.textContent = "Reproduzindo ✅");
+btn.addEventListener('click', iniciarAudio);
   </script>
 </body>
 </html>
